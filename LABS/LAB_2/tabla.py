@@ -22,7 +22,7 @@ class Tabla(Problem):
 
         for way, dir in zip(self.ways_to_go, self.dirs_to_go):
             new_player = (player[0] + way[0], player[1] + way[1])
-            if new_player in self.green_cords or new_player == new_home_and_dir[0] or new_player==(0,0):
+            if new_player in self.green_cords or new_player == new_home_and_dir[0] or new_player == (0, 0):
                 new_state = (tuple(new_player), new_home_and_dir)
                 successors[dir] = new_state
 
