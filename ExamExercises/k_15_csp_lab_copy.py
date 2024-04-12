@@ -1,26 +1,16 @@
 from constraint import *
 
 
-# var    #domain     #dic
-def max_4_constraint(*paperIDs_domains):
-    check_my_dic = {}
-    # print(paperIDs_domains)
-
-    # only 4 in one termin
-    for termin in paperIDs_domains:
-        if termin not in check_my_dic.keys():
-            check_my_dic[termin] = 1
+def max4(*termins):
+    dic = dict()
+    for t in termins:
+        if dic.__contains__(t):
+            dic[t] = dic[t] + 1
         else:
-            check_my_dic[termin] = check_my_dic.get(termin) + 1
-    for value in check_my_dic.values():
-        if value > 4:
-            return False
-
+            dic[t] = 1
+    if len([val for val in dic.values() if val > 4]) >= 1:
+        return False
     return True
-
-
-def must_be_in_same_termin(*paperIds_domains):
-    return len(set(paperIds_domains)) == 1
 
 
 if __name__ == '__main__':
@@ -35,32 +25,37 @@ if __name__ == '__main__':
         paper_info = input()
 
     # Tuka definirajte gi promenlivite
-    variables = [var + f" ({papers[var]})" for var in papers.keys()]
-    # print(variables)
 
+    # print(papers)
+    variables = [f"{key} ({val})" for key, val in papers.items()]
     domain = [f'T{i + 1}' for i in range(num)]
-    # print(domain)
 
+    # print(variables)
     problem = Problem(BacktrackingSolver())
 
     # Dokolku vi e potrebno moze da go promenite delot za dodavanje na promenlivite
     problem.addVariables(variables, domain)
 
+    dic_by_oblast = {}
+    for var in variables:
+        oblast = var[-4:-2]
+        if dic_by_oblast.__contains__(oblast):
+            dic_by_oblast[oblast].append(var)
+        else:
+            dic_by_oblast[oblast] = []
+            dic_by_oblast[oblast].append(var)
+    # print(dic_by_oblast)
+
+    for value in dic_by_oblast.values():
+        # print(value)
+        if len(value) <= 4:
+            problem.addConstraint(AllEqualConstraint(), value)
+
     # Tuka dodadete gi ogranichuvanjata
-    problem.addConstraint(max_4_constraint, tuple(variables))
-    oblasti = tuple(set(papers.values()))
-    # print(oblasti)
-    for oblast in oblasti:
-        l1 = []
-        for var in variables:
-            if oblast in var:
-                l1.append(var)
-        # print(l1)
-        if len(l1) <= 4:
-            problem.addConstraint(must_be_in_same_termin, l1)
+    problem.addConstraint(max4, variables)
 
     result = problem.getSolution()
 
     # Tuka dodadete go kodot za pechatenje
-    for v in variables:
-        print(v + ": " + result[v])
+    for var in variables:
+        print(f"{var}: {result[var]}")

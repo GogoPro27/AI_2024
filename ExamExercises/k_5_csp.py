@@ -2,12 +2,8 @@ from constraint import *
 
 
 def ml_constraint(*ML_domains):
-    hours = []
-
-    for d in ML_domains:
-        hours.append(d.split("_")[1])
-
-    return len(hours) == len(set(hours))
+    times = [int(i[-2:]) for i in ML_domains]
+    return len(times) == len(set(times))
 
 
 def different_time_constraint(a, b):
