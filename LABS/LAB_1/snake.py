@@ -144,7 +144,7 @@ if __name__ == '__main__':
     #   l , r, u, d
     initial_state = (((0, 9), (0, 8), (0, 7)), 'd', tuple(green_apples))
     game = Snake(initial_state, red_apples)
-    solution = breadth_first_graph_search(game)
+    solution = breadth_first_tree_search(game)
     if solution is not None:
         print(solution.solution())
     else:
