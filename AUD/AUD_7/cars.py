@@ -44,7 +44,7 @@ if __name__ == '__main__':
         if predicted_class == true_class:
             accuracy += 1
 
-    print(str((accuracy/len(test_x))*100)+"% na poslednite 30% od podatocijte predikcija")
+    print(str((accuracy / len(test_x)) * 100) + "% na poslednite 30% od podatocijte predikcija")
 
     entry = [el for el in input().split(" ")]
 
