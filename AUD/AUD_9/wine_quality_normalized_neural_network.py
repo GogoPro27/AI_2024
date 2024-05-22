@@ -72,9 +72,9 @@ if __name__ == '__main__':
                 tn += 1
             else:
                 fp += 1
-    acc = (tp+tn) / (tp+fp+tn+fn)
-    precision = tp / (tp+fp)
-    recall = tp / (tp+fn)
+    acc = (tp + tn) / (tp + fp + tn + fn)
+    precision = tp / (tp + fp)
+    recall = tp / (tp + fn)
 
     print('Evaluacija:')
     print(f"Tochnost: {acc}")
