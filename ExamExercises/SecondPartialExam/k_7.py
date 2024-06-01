@@ -431,7 +431,7 @@ data = [[0.02, 0.0371, 0.0428, 0.0207, 0.0954, 0.0986, 0.1539, 0.1601, 0.3109, 0
 def generate_classifier(c_name):
     if c_name == "NB":
         return GaussianNB()
-    elif c_name == "DT":
+    elif c_name == "RF":
         return RandomForestClassifier(random_state=0,
                                       n_estimators=50,
                                       criterion='entropy')
@@ -467,45 +467,21 @@ def split_dataset(mode, split, dataset):
     return train_X, train_Y, test_X, test_Y
 
 
-# def calculate_precision_recall(predictions, test_Y):
-#     tp, fp, tn, fn, acc = 0, 0, 0, 0, 0
-#     for pred, actual in zip(predictions, test_Y):
-#         if actual == 1:
-#             if pred == actual:
-#                 tp += 1
-#                 acc += 1
-#             else:
-#                 fp += 1
-#         else:
-#             if pred == actual:
-#                 tn += 1
-#                 acc += 1
-#             else:
-#                 fn += 1
-#     precision = 0
-#     recall = 0
-#     if tp + fp > 0:
-#         precision = tp / (tp + fp)
-#     if tp + fn > 0:
-#         recall = tp / (tp + fn)
-#     return precision, recall, acc / len(test_Y)
-
-
 if __name__ == '__main__':
     warnings.filterwarnings('ignore', category=ConvergenceWarning)
     mode = input()
     split = int(input()) / 100
     dataset = data
 
-    max_precision = 0
+    max_precision = -1
     accuracy_for_max_precision = 0
     max_i = -1
     for i, c in enumerate(["NB", "RF", "MLP"]):
         classifier = generate_classifier(c)
         train_X, train_Y, test_X, test_Y = split_dataset(mode, split, dataset)
         classifier.fit(train_X, train_Y)
-        # precision, recall, accuracy = calculate_precision_recall(classifier.predict(test_X), test_Y)
         precision = precision_score(test_Y,classifier.predict(test_X),zero_division=0)
+        print(precision)
         if precision > max_precision:
             max_precision = precision
             accuracy_for_max_precision = accuracy_score(test_Y,classifier.predict(test_X))
