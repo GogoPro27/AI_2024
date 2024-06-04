@@ -1,6 +1,7 @@
 # from sklearn import MinMaxScaler, MLPClassifier
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.neural_network import MLPClassifier
+from sklearn.metrics import accuracy_score
 
 dataset = [[30, 92726, 2.0, 9, 2011, -37.8497, 144.968, 10, 0],
            [43, 95408, 0.0, 12, 2014, -37.8497, 144.968, 10, 0],
@@ -105,61 +106,58 @@ dataset = [[30, 92726, 2.0, 9, 2011, -37.8497, 144.968, 10, 0],
            [60, 83001, 0.0, 23, 2011, 43.7347, 7.42056, 7, 0]]
 
 
-def calculate_accuracy(test_X, test_Y, classifier: MLPClassifier):
+def split_x_y(set):
+    return [row[:-1] for row in set], [row[-1] for row in set]
+
+
+def idx(set, percent):
+    return int(percent * len(set))
+
+
+def removed_column_set(set, idx):
+    return [[row[i] for i in range(len(row)) if i != idx] for row in set]
+
+
+def accuracy(test_Y,predictions):
     acc = 0
-    predictions = classifier.predict(test_X)
     for pred, actual in zip(predictions, test_Y):
         if pred == actual:
             acc += 1
     return acc / len(test_Y)
 
 
-def row_wo_col(row, x):
-    return row[:x] + row[x + 1:]
-
-
 if __name__ == '__main__':
-    num_neurons_hidden = int(input())
-    l_r = float(input())
-    col_to_remove = int(input())
-    line_to_classify = list(map(float, input().split(" ")))
+    neurons = int(input())
+    learn_rate = float(input())
+    index_to_remove = int(input())
+    to_classify = list(map(float, input().split(" ")))
 
-    train_set = dataset[:int(0.8 * len(dataset))]
-    train_X = [row[:-1] for row in train_set]
-    train_Y = [row[-1] for row in train_set]
+    train_set = dataset[:idx(dataset, 0.8)]
+    val_set = dataset[idx(dataset, 0.8):]
 
-    val_set = dataset[int(0.8 * len(dataset)):]
-    val_X = [row[:-1] for row in val_set]
-    val_Y = [row[-1] for row in val_set]
+    train_X, train_Y = split_x_y(train_set)
+    val_X, val_Y = split_x_y(val_set)
 
     scaler = MinMaxScaler(feature_range=(-1, 1))
     scaler.fit(train_X)
 
-    train_X = scaler.transform(train_X)
-    val_X = scaler.transform(val_X)
-
-    classifier = MLPClassifier(hidden_layer_sizes=num_neurons_hidden,
-                               learning_rate_init=l_r,
+    classifier = MLPClassifier(random_state=0,
+                               max_iter=20,
                                activation='relu',
-                               random_state=0,
-                               max_iter=20)
-    classifier.fit(train_X, train_Y)
-    accuracy_val = calculate_accuracy(val_X, val_Y, classifier)
-    accuracy_train = calculate_accuracy(train_X, train_Y, classifier)
+                               hidden_layer_sizes=neurons,
+                               learning_rate_init=learn_rate)
+    classifier.fit(scaler.transform(train_X), train_Y)
 
-    flag = 0
+    accuracy_train = accuracy(train_Y, classifier.predict(scaler.transform(train_X)))
+    accuracy_val = accuracy(val_Y, classifier.predict(scaler.transform(val_X)))
+
     if accuracy_train > accuracy_val * 1.15:
+        train_X_new = removed_column_set(train_X, index_to_remove)
+        scaler.fit(train_X_new)
+        classifier.fit(scaler.transform(train_X_new), train_Y)
+        to_classify = [to_classify[i] for i in range(0, len(to_classify)) if i != index_to_remove]
         print("Se sluchuva overfitting")
-        train_X = [[row[i] for i in range(len(row)) if i != col_to_remove] for row in train_X]
-        line_to_classify = [line_to_classify[i] for i in range(len(line_to_classify)) if i != col_to_remove]
-        # print(line_to_classify)
-        classifier.fit(train_X,train_Y)
-        new_scaler = MinMaxScaler(feature_range=(-1,1))
-        new_scaler.fit(train_X)
-        line_to_classify = new_scaler.transform([line_to_classify])
     else:
         print("Ne se sluchuva overfitting")
-        line_to_classify = scaler.transform([line_to_classify])
 
-    predicted_class = classifier.predict(line_to_classify)[0]
-    print(predicted_class)
+    print(classifier.predict(scaler.transform([to_classify]))[0])
