@@ -1,5 +1,6 @@
 # SAME AS IN LABS
 import os
+
 os.environ['OPENBLAS_NUM_THREADS'] = '1'
 from sklearn.ensemble import RandomForestClassifier
 
@@ -167,12 +168,9 @@ if __name__ == '__main__':
     col_index = int(input())
     num_trees = int(input())
     crit = input()
-    input_to_predict = [el for i,el in enumerate(list(map(float, input().split(" ")))) if i !=col_index]
+    input_to_predict = [el for i, el in enumerate(list(map(float, input().split(" ")))) if i != col_index]
 
-    dataset_deleted_col = list()
-    for row in dataset:
-        dataset_deleted_col.append([row[i] for i in range(0, len(row)) if i != col_index])
-    dataset = dataset_deleted_col
+    dataset = [[row[i] for i in range(len(row)) if i != col_index] for row in dataset]
 
     train_set = dataset[:int(len(dataset) * 0.85)]
     train_X = [row[:-1] for row in train_set]

@@ -1,7 +1,9 @@
 # SAME AS IN LABS
 import os
+
 os.environ['OPENBLAS_NUM_THREADS'] = '1'
 from sklearn.naive_bayes import GaussianNB
+
 if __name__ == '__main__':
 
     dataset = [['1', '35', '12', '5', '1', '100', '0'], ['1', '29', '7', '5', '1', '96', '1'],
@@ -48,7 +50,7 @@ if __name__ == '__main__':
                ['2', '34', '12', '3', '3', '95', '0'], ['2', '20', '3.5', '6', '1', '75', '1'],
                ['2', '35', '8.25', '8', '3', '100', '0'], ['1', '24', '10.75', '10', '1', '20', '1'],
                ['1', '19', '8', '8', '1', '160', '1']]
-    dataset = [[float(i) for i in row]for row in dataset]
+    dataset = [[float(i) for i in row] for row in dataset]
 
     train_set = dataset[:int(0.85 * len(dataset))]
     train_X = [row[:-1] for row in train_set]
@@ -69,8 +71,6 @@ if __name__ == '__main__':
             accuracy += 1
     input_test = [float(i) for i in input().split(" ")]
     print(accuracy / len(test_set))
-
-
 
     prediction_from_input = classifier.predict([input_test])[0]
     print(int(prediction_from_input))
